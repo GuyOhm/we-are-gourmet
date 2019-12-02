@@ -1,0 +1,14 @@
+.Restaurant-item {
+  background-color: #dddddd;
+  border: 1px solid darkgrey;
+  padding: 10px 10px;
+}
+
+.Restaurant-name {
+  font-size: large;
+}
+
+.Restaurant-address {
+  font-size: small;
+  font-style: italic;
+}

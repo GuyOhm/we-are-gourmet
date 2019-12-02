@@ -1,0 +1,29 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.Main {
+  display: flex;
+  flex: 4;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
