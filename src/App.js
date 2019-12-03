@@ -5,6 +5,9 @@ import RestaurantsList from './RestaurantsList';
 import Map from './Map';
 import RestaurantData from './model/RestaurantData'
 
+const RADIUS = '1000';
+const PLACES_TYPE_SEARCH = ['restaurant'];
+
 function App() {
   
   const [ restaurants, setRestaurants ] = useState([]);
@@ -39,8 +42,8 @@ function App() {
     const user = new maps.LatLng(center.lat, center.lng);
     const request = {
       location: user,
-      radius: '1000',
-      type: ['restaurant'],
+      radius: RADIUS,
+      type: PLACES_TYPE_SEARCH,
     }
     
     const restaurants = [];
