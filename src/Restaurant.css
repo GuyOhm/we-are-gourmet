@@ -1,7 +1,18 @@
 .Restaurant-item {
+  display: flex;
+  flex-direction: row;
   background-color: #dddddd;
   border: 1px solid darkgrey;
   padding: 10px 10px;
+}
+
+.Restaurant-main {
+  flex: 4;
+  align-self: center;
+}
+
+.Restaurant-rating {
+  flex: 1;
 }
 
 .Restaurant-name {
