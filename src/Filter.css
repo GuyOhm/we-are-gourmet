@@ -1,5 +1,14 @@
 .Filter {
+  display: flex;
+  flex-direction: row;
   width: 100%;
-  height: 40px;
   background-color: yellowgreen;
+}
+
+.Filter-from {
+  flex: 1;
+}
+
+.Filter-to {
+  flex: 1
 }

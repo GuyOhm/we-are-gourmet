@@ -1,32 +1,43 @@
 import React, { useState } from 'react';
+import Rating from '@material-ui/lab/Rating';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import './Filter.css';
 
 function Filter(props) {
 
-  function handleChange(event) {
-    console.log(event)
-  }
-  
+  const [value, setValue] = useState({from: 1, to: 5});
+    
   return (
+    
     <div className='Filter'>
-        <select name='min-stars' id='filter-min' onChange={handleChange}>
-          <option value=''>--Select min nb of stars--</option>
-          <option value='1'>1 star</option>
-          <option value='2'>2 stars</option>
-          <option value='3'>3 stars</option>
-          <option value='4'>4 stars</option>
-          <option value='5'>5 stars</option>
-        </select>
-        <select name='min-stars' id='filter-min'>
-          <option value=''>--Select max nb of stars--</option>
-          <option value='1'>1 star</option>
-          <option value='2'>2 stars</option>
-          <option value='3'>3 stars</option>
-          <option value='4'>4 stars</option>
-          <option value='5'>5 stars</option>
-        </select>
+      <div className="Filter-from">
+        <Box component="fieldset" borderColor="transparent">
+          <Typography component="legend">From</Typography>
+          <Rating
+            name="simple-controlled-1"
+            value={value.from}
+            onChange={(event, newValue) => {
+              setValue(prevValue => ({from: newValue, to: prevValue.to}));
+            }}
+          />
+        </Box>
+      </div>
+      <div className="Filter-to">
+        <Box component="fieldset" borderColor="transparent">
+          <Typography component="legend">To</Typography>
+          <Rating
+            name="simple-controlled-2"
+            value={value.to}
+            onChange={(event, newValue) => {
+              setValue(prevValue => ({from: prevValue.from, to: newValue}));
+            }}
+          />
+        </Box>
+      </div>
     </div>
   );
+  
 }
 
 export default Filter;
