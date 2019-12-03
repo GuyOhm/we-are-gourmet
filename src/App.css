@@ -23,7 +23,7 @@
 
 .Main {
   display: flex;
-  flex: 4;
+  flex: 5;
   flex-direction: column;
   flex-wrap: wrap;
 }
