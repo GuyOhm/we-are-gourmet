@@ -15,12 +15,10 @@ const PARIS_LATLNG = {
 function App() {
   
   const [ restaurants, setRestaurants ] = useState([]);
+  const [ restaurantsFiltered, setRestaurantsFiltered ] = useState([]);
   const [ isLoading, setIsLoading ] = useState(false);
   const [ center, setCenter ] = useState(PARIS_LATLNG);
-  const [ filter, setFilter ] = useState({
-    min: 0,
-    max: 5
-  });
+  const [ filter, setFilter ] = useState(null);
   const [ readyLocation, setReadyLocation ] = useState(false);
   const mapRef = React.createRef();
   
@@ -51,7 +49,6 @@ function App() {
 
     service.nearbySearch(request, (results, status) => {
       if (status === maps.places.PlacesServiceStatus.OK) {
-        console.log('getRestaurants', center)
         results.forEach(result => {
           const newRestaurant = new RestaurantData(result);
           restaurants.push(newRestaurant);
@@ -59,6 +56,10 @@ function App() {
       }
       setRestaurants(restaurants);
     });
+  }
+
+  function onFilterChange(range) {
+    setFilter(range);
   }
 
   useEffect( () => {
@@ -82,18 +83,30 @@ function App() {
       }
     }
     setUserPosition();
-    console.log('useEffect... center')
   }, []);
 
   useEffect( () => {
     // Get objects map and maps from Google Maps API through Map component
-    console.log('useEffect... restaurants', center)
     async function getRestaurants() {
       const {map, maps} = await mapRef.current.apiLoadedPromise;
       getPlacesRestaurants(map, maps);
     }
     if(readyLocation) getRestaurants();
   }, [center]);
+
+  useEffect(() => {
+    if (readyLocation) {
+      let restaurantsFiltered = [];
+      restaurantsFiltered = restaurants.filter(restaurant => {
+        return (
+          filter.to >= filter.from ?
+          restaurant.averageRating >= filter.from && restaurant.averageRating <= filter.to :
+          restaurant.averageRating <= filter.from && restaurant.averageRating >= filter.to
+        );
+      })
+      setRestaurantsFiltered(restaurantsFiltered);
+    }
+  }, [restaurants, filter])
 
   return (
     <div className="App">
@@ -104,11 +117,11 @@ function App() {
       </header>
       <div className="App-body">
         <section className="Main">
-          <Filter />
-          <RestaurantsList restaurants={restaurants} />
+          <Filter onFilterChange={onFilterChange} />
+          <RestaurantsList restaurants={restaurantsFiltered} />
         </section>
         <Map
-          restaurants={restaurants}
+          restaurants={restaurantsFiltered}
           ref={mapRef}
           center={center}
           isLoading={isLoading} />
