@@ -20,7 +20,7 @@ function App() {
   const [ center, setCenter ] = useState(PARIS_LATLNG);
   const [ filter, setFilter ] = useState(null);
   const [ readyLocation, setReadyLocation ] = useState(false);
-  const mapRef = React.createRef();
+  const [ mapAPI, setMapAPI ] = useState(null);
   
   const getUserPosition = () => {
     return new Promise( (resolve, reject) => {
@@ -36,7 +36,8 @@ function App() {
     });
   }
 
-  const getPlacesRestaurants = (map, maps) => {
+  const getPlacesRestaurants = (mapAPI) => {
+    const { map, maps } = mapAPI;
     const service = new maps.places.PlacesService(map);
     const user = new maps.LatLng(center.lat, center.lng);
     const request = {
@@ -44,7 +45,6 @@ function App() {
       radius: RADIUS,
       type: PLACES_TYPE_SEARCH,
     }
-    
     const restaurants = [];
 
     service.nearbySearch(request, (results, status) => {
@@ -60,6 +60,10 @@ function App() {
 
   function onFilterChange(range) {
     setFilter(range);
+  }
+
+  function handleGoogleApi(mapAPI) {
+    if (mapAPI != null) setMapAPI(mapAPI);
   }
 
   useEffect( () => {
@@ -87,12 +91,10 @@ function App() {
 
   useEffect( () => {
     // Get objects map and maps from Google Maps API through Map component
-    async function getRestaurants() {
-      const {map, maps} = await mapRef.current.apiLoadedPromise;
-      getPlacesRestaurants(map, maps);
+    if (readyLocation && mapAPI != null) {
+      getPlacesRestaurants(mapAPI);
     }
-    if(readyLocation) getRestaurants();
-  }, [center]);
+  }, [center, mapAPI]);
 
   useEffect(() => {
     if (readyLocation) {
@@ -122,7 +124,7 @@ function App() {
         </section>
         <Map
           restaurants={restaurantsFiltered}
-          ref={mapRef}
+          handleGoogleApi={handleGoogleApi}
           center={center}
           isLoading={isLoading} />
       </div>
