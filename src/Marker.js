@@ -1,21 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Marker.css';
 
-class Marker extends Component {
+function Marker(props) {
 
-  handleClick = () => {
-    console.log(this)
+  function handleClick() {
+    console.log('click marker');
   }
 
-  render() {
-    let classes = 'Marker';
-    // this.props.user ? classes = 'Marker User' : classes = 'Marker';
-    return (
-      <div className={classes} onClick={this.handleClick}>
-        {this.props.text}
-      </div>
-    );
-  }
+  return (
+    <div className="Marker" onClick={handleClick}>
+      {props.text}
+    </div>
+  );
 }
 
 export default Marker;
