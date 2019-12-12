@@ -3,7 +3,9 @@ import './App.css';
 import Filter from './Filter';
 import RestaurantsList from './RestaurantsList';
 import Map from './Map';
-import RestaurantData from './model/RestaurantData'
+import RestaurantData from './model/RestaurantData';
+import RatingData from './model/RatingData';
+import Details from './Details';
 
 const RADIUS = '1000';
 const PLACES_TYPE_SEARCH = ['restaurant'];
@@ -21,6 +23,8 @@ function App() {
   const [ filter, setFilter ] = useState(null);
   const [ readyLocation, setReadyLocation ] = useState(false);
   const [ mapAPI, setMapAPI ] = useState(null);
+  const [ openDetails, setOpenDetails ] = useState(false);
+  const [ restaurantDetails, setRestaurantDetails ] = useState(null);
   
   const getUserPosition = () => {
     return new Promise( (resolve, reject) => {
@@ -64,6 +68,45 @@ function App() {
 
   function handleGoogleApi(mapAPI) {
     if (mapAPI != null) setMapAPI(mapAPI);
+  }
+
+  function getPlaceDetails(restaurant) {
+    const { place_id } = restaurant;
+    const { map, maps } = mapAPI;
+    const request = {
+      placeId: place_id,
+    }
+    const service = new maps.places.PlacesService(map);
+    service.getDetails(request, (results, status) => {
+      if (status === maps.places.PlacesServiceStatus.OK) {
+        addRestaurantData(restaurant, results);
+      }
+    })
+  }
+
+  function addRestaurantData(restaurant, results) {
+    const { reviews } = results;
+    reviews.map(review => restaurant.ratings.push(new RatingData(review)))
+    updateRestaurantData(restaurant);
+  }
+
+  function updateRestaurantData(restaurant) {
+    const index = restaurants.indexOf(restaurant);
+    if (index >= 0) {
+      const newRestaurants = restaurants;
+      newRestaurants.splice(index, 1, restaurant);
+      setRestaurants(newRestaurants);
+    }
+    displayRestaurantDetails(restaurant);
+  }
+
+  function displayRestaurantDetails(restaurant) {
+    setRestaurantDetails(restaurant);
+    setOpenDetails(true);
+  }
+
+  function onCloseDetails() {
+    setOpenDetails(false);
   }
 
   useEffect( () => {
@@ -120,13 +163,22 @@ function App() {
       <div className="App-body">
         <section className="Main">
           <Filter onFilterChange={onFilterChange} />
-          <RestaurantsList restaurants={restaurantsFiltered} />
+          <RestaurantsList
+            restaurants={restaurantsFiltered}
+            displayDetails={getPlaceDetails}
+          />
         </section>
         <Map
           restaurants={restaurantsFiltered}
           handleGoogleApi={handleGoogleApi}
           center={center}
-          isLoading={isLoading} />
+          isLoading={isLoading}
+          displayDetails={getPlaceDetails}
+        />
+        <Details
+          open={openDetails}
+          onClose={onCloseDetails}
+          restaurant={restaurantDetails} />
       </div>
     </div>
   );

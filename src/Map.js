@@ -28,18 +28,22 @@ function Map(props) {
         >
           {props.restaurants.map( (restaurant, index) => (
             <Marker
-            key={index}
-            lat={restaurant.position.lat}
-            lng={restaurant.position.lng}
-            text={restaurant.name}
+              key={index}
+              lat={restaurant.position.lat}
+              lng={restaurant.position.lng}
+              text={restaurant.name}
+              restaurant={restaurant}
+              displayDetails={props.displayDetails}
+              user={false}
             />)
             )
           }
           <Marker
-          lat={props.center.lat}
-          lng={props.center.lng}
-          text="You're here"
-          user={true}
+            lat={props.center.lat}
+            lng={props.center.lng}
+            text="You're here"
+            user={true}
+            displayDetails={props.displayDetails}
           />
         </GoogleMapReact>)
       }
