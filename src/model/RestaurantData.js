@@ -1,5 +1,3 @@
-import RatingData from './RatingData'
-
 class RestaurantData {
   constructor(json) {
     this.ratings = [];
@@ -14,8 +12,8 @@ class RestaurantData {
       lng: json.geometry.location.lng()
     }
     this.averageRating = json.rating;
+    this.nbOfVotes = json.user_ratings_total;
   }
-  
 }
 
 export default RestaurantData;

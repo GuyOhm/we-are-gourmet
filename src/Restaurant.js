@@ -6,7 +6,7 @@ import Box from '@material-ui/core/Box';
 function Restaurant(props) {
 
   const handleClick = (event) => {
-    console.log('click');
+    props.displayDetails(props.restaurant);
   }
 
   return (

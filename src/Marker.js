@@ -4,7 +4,9 @@ import './Marker.css';
 function Marker(props) {
 
   function handleClick() {
-    console.log('click marker');
+    if (!props.user) {
+      props.displayDetails(props.restaurant);
+    }
   }
 
   return (
