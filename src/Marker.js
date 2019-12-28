@@ -9,9 +9,13 @@ function Marker(props) {
     }
   }
 
+  const iconUrl = props.user ? "/user-marker.png" : "/restaurant-marker.png";
+
   return (
-    <div className="Marker" onClick={handleClick}>
-      {props.text}
+    <div
+      style={{backgroundImage: `url(${iconUrl})`, width: "40px", height: "40px", backgroundSize: "contain"}}
+      onClick={handleClick}>
+      {/* {props.text} */}
     </div>
   );
 }

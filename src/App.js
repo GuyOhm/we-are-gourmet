@@ -71,33 +71,37 @@ function App() {
   }
 
   function getPlaceDetails(restaurant) {
-    const { place_id } = restaurant;
-    const { map, maps } = mapAPI;
-    const request = {
-      placeId: place_id,
-    }
-    const service = new maps.places.PlacesService(map);
-    service.getDetails(request, (results, status) => {
-      if (status === maps.places.PlacesServiceStatus.OK) {
-        addRestaurantData(restaurant, results);
+    if (restaurant.ratings.length < 1) {
+      const { place_id } = restaurant;
+      const { map, maps } = mapAPI;
+      const request = {
+        placeId: place_id,
       }
-    })
+      const service = new maps.places.PlacesService(map);
+      service.getDetails(request, (results, status) => {
+        if (status === maps.places.PlacesServiceStatus.OK) {
+          addRestaurantData(restaurant, results);
+        }
+      });
+    } else {
+      displayRestaurantDetails(restaurant);
+    }
   }
 
   function addRestaurantData(restaurant, results) {
     const { reviews } = results;
-    reviews.map(review => restaurant.ratings.push(new RatingData(review)))
+    reviews.map(review => restaurant.ratings.push(new RatingData(review)));
     updateRestaurantData(restaurant);
   }
 
-  function updateRestaurantData(restaurant) {
+  function updateRestaurantData(restaurant, displayDetails = true) {
     const index = restaurants.indexOf(restaurant);
     if (index >= 0) {
       const newRestaurants = restaurants;
       newRestaurants.splice(index, 1, restaurant);
       setRestaurants(newRestaurants);
     }
-    displayRestaurantDetails(restaurant);
+    if (displayDetails) displayRestaurantDetails(restaurant);
   }
 
   function displayRestaurantDetails(restaurant) {
@@ -107,6 +111,15 @@ function App() {
 
   function onCloseDetails() {
     setOpenDetails(false);
+  }
+
+  function addReview(review) {
+    const { rating } = review;
+    const restaurant = restaurantDetails;
+    restaurant.ratings.push(new RatingData(review));
+    restaurant.updateAverageRatingData(rating);
+    updateRestaurantData(restaurant, false);
+    setRestaurantDetails(restaurant);
   }
 
   useEffect( () => {
@@ -178,7 +191,8 @@ function App() {
         <Details
           open={openDetails}
           onClose={onCloseDetails}
-          restaurant={restaurantDetails} />
+          restaurant={restaurantDetails}
+          addReview={addReview} />
       </div>
     </div>
   );

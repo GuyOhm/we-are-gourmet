@@ -1,0 +1,19 @@
+img {
+  width: 100%;
+  height: auto;
+}
+
+.Comment-info {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.Comment-name {
+  flex: 4;
+}
+
+.Comment-rating {
+  flex: 1;
+}
