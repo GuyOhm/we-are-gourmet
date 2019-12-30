@@ -14,6 +14,7 @@ class RestaurantData {
     }
     this.averageRating = json.rating;
     this.nbOfVotes = json.user_ratings_total;
+    this.hasGotDetails= false;
   }
 
   updateAverageRatingData(newRating) {

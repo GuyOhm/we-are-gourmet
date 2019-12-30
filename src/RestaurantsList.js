@@ -6,7 +6,12 @@ function RestaurantsList(props) {
   return (
     <div className="Restaurants-list">
       {props.restaurants.map( (restaurant, index) => {
-        return <Restaurant key={index} restaurant={restaurant} displayDetails={props.displayDetails}/>
+        return <Restaurant
+        key={index}
+        restaurant={restaurant}
+        displayDetails={props.displayDetails}
+        hoverRestaurant={props.hoverRestaurant}
+        restaurantHover={props.restaurantHover} />
       })}
     </div>
   );

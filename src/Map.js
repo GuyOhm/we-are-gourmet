@@ -35,6 +35,8 @@ function Map(props) {
               restaurant={restaurant}
               displayDetails={props.displayDetails}
               user={false}
+              hoverRestaurant={props.hoverRestaurant}
+              restaurantHover={props.restaurantHover}
             />)
             )
           }

@@ -25,6 +25,7 @@ function App() {
   const [ mapAPI, setMapAPI ] = useState(null);
   const [ openDetails, setOpenDetails ] = useState(false);
   const [ restaurantDetails, setRestaurantDetails ] = useState(null);
+  const [ restaurantHover, setRestaurantHover ] = useState(null);
   
   const getUserPosition = () => {
     return new Promise( (resolve, reject) => {
@@ -43,11 +44,12 @@ function App() {
   const getPlacesRestaurants = (mapAPI) => {
     const { map, maps } = mapAPI;
     const service = new maps.places.PlacesService(map);
-    const user = new maps.LatLng(center.lat, center.lng);
+    // const user = new maps.LatLng(center.lat, center.lng);
     const request = {
-      location: user,
-      radius: RADIUS,
+      // location: user,
+      // radius: RADIUS,
       type: PLACES_TYPE_SEARCH,
+      bounds: map.getBounds()
     }
     const restaurants = [];
 
@@ -71,7 +73,8 @@ function App() {
   }
 
   function getPlaceDetails(restaurant) {
-    if (restaurant.ratings.length < 1) {
+    // add boolean for places search
+    if (!restaurant.hasGotDetails) {
       const { place_id } = restaurant;
       const { map, maps } = mapAPI;
       const request = {
@@ -80,6 +83,7 @@ function App() {
       const service = new maps.places.PlacesService(map);
       service.getDetails(request, (results, status) => {
         if (status === maps.places.PlacesServiceStatus.OK) {
+          restaurant.hasGotDetails = true;
           addRestaurantData(restaurant, results);
         }
       });
@@ -122,6 +126,10 @@ function App() {
     setRestaurantDetails(restaurant);
   }
 
+  function hoverRestaurant(restaurant) {
+    setRestaurantHover(restaurant);
+  }
+
   useEffect( () => {
     // Load user position and update center
     setIsLoading(true);
@@ -152,7 +160,7 @@ function App() {
     }
   }, [center, mapAPI]);
 
-  useEffect(() => {
+  useEffect( () => {
     if (readyLocation) {
       let restaurantsFiltered = [];
       restaurantsFiltered = restaurants.filter(restaurant => {
@@ -179,6 +187,8 @@ function App() {
           <RestaurantsList
             restaurants={restaurantsFiltered}
             displayDetails={getPlaceDetails}
+            hoverRestaurant={hoverRestaurant}
+            restaurantHover={restaurantHover}
           />
         </section>
         <Map
@@ -187,6 +197,8 @@ function App() {
           center={center}
           isLoading={isLoading}
           displayDetails={getPlaceDetails}
+          hoverRestaurant={hoverRestaurant}
+          restaurantHover={restaurantHover}
         />
         <Details
           open={openDetails}

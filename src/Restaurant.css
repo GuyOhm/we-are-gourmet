@@ -6,6 +6,10 @@
   padding: 10px 10px;
 }
 
+.Hovered {
+  background-color: #5f9ea0;
+}
+
 .Restaurant-main {
   flex: 4;
   align-self: center;
