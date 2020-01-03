@@ -1,7 +1,9 @@
 class RestaurantData {
   constructor(json) {
     this.ratings = [];
-    this.initData(json);
+    if (json) {
+      this.initData(json);
+    }
   }
 
   initData(json) {

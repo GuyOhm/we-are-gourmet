@@ -32,7 +32,7 @@ function Restaurant(props) {
       </div>
       <div className="Restaurant-rating">
         <Box component="fieldset" mt={1} borderColor="transparent">
-        <Rating name="read-only" value={props.restaurant.averageRating} precision={0.1} readOnly />
+        {props.restaurant.averageRating > 0 && <Rating name="read-only" value={props.restaurant.averageRating} precision={0.1} readOnly />}
         </Box>
       </div>
     </div>

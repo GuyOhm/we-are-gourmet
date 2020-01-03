@@ -7,13 +7,20 @@ const API_KEY = process.env.REACT_APP_GMAPS_API_KEY;
 
 function Map(props) {
 
-  const [map, setMap] = useState(null);
+  const [mapAPI, setMapAPI] = useState(null);
+
+  function handleClick(event) {
+    const { lat, lng } = event; 
+    props.addRestaurant({lat, lng});
+  }
 
   useEffect(() => {
-    if (map != null) {
-      props.handleGoogleApi(map);
+    if (mapAPI != null) {
+      props.handleGoogleApi(mapAPI);
+      const { map } = mapAPI;
+      map.addListener('idle', () => props.cleanAndReload(mapAPI));
     }
-  }, [map])
+  }, [mapAPI])
 
   return (
     <div className="Map">
@@ -24,7 +31,8 @@ function Map(props) {
             center={props.center}
             zoom={14}
             yesIWantToUseGoogleMapApiInternals={true}
-            onGoogleApiLoaded={({map, maps}) => setMap({map: map, maps: maps})}
+            onGoogleApiLoaded={({map, maps}) => setMapAPI({map: map, maps: maps})}
+            onClick={handleClick}
         >
           {props.restaurants.map( (restaurant, index) => (
             <Marker

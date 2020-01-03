@@ -6,8 +6,8 @@ import Map from './Map';
 import RestaurantData from './model/RestaurantData';
 import RatingData from './model/RatingData';
 import Details from './Details';
+import AddRestaurant from './AddRestaurant';
 
-const RADIUS = '1000';
 const PLACES_TYPE_SEARCH = ['restaurant'];
 const PARIS_LATLNG = {
   lat: 48.864716,
@@ -17,7 +17,6 @@ const PARIS_LATLNG = {
 function App() {
   
   const [ restaurants, setRestaurants ] = useState([]);
-  const [ restaurantsFiltered, setRestaurantsFiltered ] = useState([]);
   const [ isLoading, setIsLoading ] = useState(false);
   const [ center, setCenter ] = useState(PARIS_LATLNG);
   const [ filter, setFilter ] = useState(null);
@@ -26,6 +25,9 @@ function App() {
   const [ openDetails, setOpenDetails ] = useState(false);
   const [ restaurantDetails, setRestaurantDetails ] = useState(null);
   const [ restaurantHover, setRestaurantHover ] = useState(null);
+  const [ openAddRestaurant, setOpenAddRestaurant ] = useState(false);
+  const [ positionNewRestaurant, setPositionNewRestaurant ] = useState(null);
+  const [restaurantsAdded, setRestaurantsAdded] = useState([]);
   
   const getUserPosition = () => {
     return new Promise( (resolve, reject) => {
@@ -44,10 +46,7 @@ function App() {
   const getPlacesRestaurants = (mapAPI) => {
     const { map, maps } = mapAPI;
     const service = new maps.places.PlacesService(map);
-    // const user = new maps.LatLng(center.lat, center.lng);
     const request = {
-      // location: user,
-      // radius: RADIUS,
       type: PLACES_TYPE_SEARCH,
       bounds: map.getBounds()
     }
@@ -69,12 +68,11 @@ function App() {
   }
 
   function handleGoogleApi(mapAPI) {
-    if (mapAPI != null) setMapAPI(mapAPI);
+    if (mapAPI !== null) setMapAPI(mapAPI);
   }
 
   function getPlaceDetails(restaurant) {
-    // add boolean for places search
-    if (!restaurant.hasGotDetails) {
+    if (!restaurant.hasGotDetails && restaurant.place_id !== undefined) {
       const { place_id } = restaurant;
       const { map, maps } = mapAPI;
       const request = {
@@ -113,7 +111,7 @@ function App() {
     setOpenDetails(true);
   }
 
-  function onCloseDetails() {
+  function closeDetails() {
     setOpenDetails(false);
   }
 
@@ -128,6 +126,31 @@ function App() {
 
   function hoverRestaurant(restaurant) {
     setRestaurantHover(restaurant);
+  }
+
+  function closeAddRestaurant() {
+    setOpenAddRestaurant(false);
+  }
+
+  function addRestaurantFromMap(position) {
+    setPositionNewRestaurant(position)
+    setOpenAddRestaurant(true);
+  }
+
+  function saveRestaurantFromMap(restaurant) {
+    setRestaurantsAdded(prevRestaurants => [...prevRestaurants, restaurant]);
+  }
+
+  function getFilteredRestaurants(restaurants) {
+    let restaurantsFiltered = [];
+    restaurantsFiltered = restaurants.filter(restaurant => {
+      return (
+        filter.to >= filter.from ?
+        restaurant.averageRating >= filter.from && restaurant.averageRating <= filter.to || restaurant.averageRating === 0 :
+        restaurant.averageRating <= filter.from && restaurant.averageRating >= filter.to || restaurant.averageRating === 0 
+      );
+    })
+    return restaurantsFiltered;
   }
 
   useEffect( () => {
@@ -155,24 +178,10 @@ function App() {
 
   useEffect( () => {
     // Get objects map and maps from Google Maps API through Map component
-    if (readyLocation && mapAPI != null) {
+    if (readyLocation && mapAPI !== null) {
       getPlacesRestaurants(mapAPI);
     }
   }, [center, mapAPI]);
-
-  useEffect( () => {
-    if (readyLocation) {
-      let restaurantsFiltered = [];
-      restaurantsFiltered = restaurants.filter(restaurant => {
-        return (
-          filter.to >= filter.from ?
-          restaurant.averageRating >= filter.from && restaurant.averageRating <= filter.to :
-          restaurant.averageRating <= filter.from && restaurant.averageRating >= filter.to
-        );
-      })
-      setRestaurantsFiltered(restaurantsFiltered);
-    }
-  }, [restaurants, filter])
 
   return (
     <div className="App">
@@ -185,26 +194,33 @@ function App() {
         <section className="Main">
           <Filter onFilterChange={onFilterChange} />
           <RestaurantsList
-            restaurants={restaurantsFiltered}
+            restaurants={[...getFilteredRestaurants(restaurants), ...getFilteredRestaurants(restaurantsAdded)]}
             displayDetails={getPlaceDetails}
             hoverRestaurant={hoverRestaurant}
             restaurantHover={restaurantHover}
           />
         </section>
         <Map
-          restaurants={restaurantsFiltered}
+          restaurants={[...getFilteredRestaurants(restaurants), ...getFilteredRestaurants(restaurantsAdded)]}
           handleGoogleApi={handleGoogleApi}
           center={center}
           isLoading={isLoading}
           displayDetails={getPlaceDetails}
           hoverRestaurant={hoverRestaurant}
           restaurantHover={restaurantHover}
+          addRestaurant={addRestaurantFromMap}
+          cleanAndReload={getPlacesRestaurants}
         />
         <Details
           open={openDetails}
-          onClose={onCloseDetails}
+          onClose={closeDetails}
           restaurant={restaurantDetails}
           addReview={addReview} />
+        <AddRestaurant
+          open={openAddRestaurant}
+          onClose={closeAddRestaurant}
+          position={positionNewRestaurant}
+          saveRestaurant={saveRestaurantFromMap} />
       </div>
     </div>
   );
