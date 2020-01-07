@@ -51,7 +51,6 @@ function App() {
       bounds: map.getBounds()
     }
     const restaurants = [];
-
     service.nearbySearch(request, (results, status) => {
       if (status === maps.places.PlacesServiceStatus.OK) {
         results.forEach(result => {
@@ -141,14 +140,22 @@ function App() {
     setRestaurantsAdded(prevRestaurants => [...prevRestaurants, restaurant]);
   }
 
+  function shouldDisplayOnMap(restaurant) {
+    const { map } = mapAPI;
+    const bounds = map.getBounds();
+    return bounds.contains(restaurant.position);
+  }
+
   function getFilteredRestaurants(restaurants) {
     let restaurantsFiltered = [];
     restaurantsFiltered = restaurants.filter(restaurant => {
-      return (
-        filter.to >= filter.from ?
-        restaurant.averageRating >= filter.from && restaurant.averageRating <= filter.to || restaurant.averageRating === 0 :
-        restaurant.averageRating <= filter.from && restaurant.averageRating >= filter.to || restaurant.averageRating === 0 
-      );
+      if (shouldDisplayOnMap(restaurant)) {
+        return (
+          filter.to >= filter.from ?
+          restaurant.averageRating >= filter.from && restaurant.averageRating <= filter.to || restaurant.averageRating === 0 :
+          restaurant.averageRating <= filter.from && restaurant.averageRating >= filter.to || restaurant.averageRating === 0 
+        );
+      }
     })
     return restaurantsFiltered;
   }
@@ -165,13 +172,12 @@ function App() {
         };
         setReadyLocation(true);
         setCenter(center);
-        setIsLoading(false);
       }
       catch (error) {
         console.log(error);
         setReadyLocation(true);
-        setCenter(center);
       }
+      setIsLoading(false);
     }
     setUserPosition();
   }, []);

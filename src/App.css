@@ -21,9 +21,15 @@
   flex-wrap: wrap;
 }
 
+@media screen and (max-width: 768px) {
+  .App-body {
+    flex-direction: column;
+  }
+}
+
 .Main {
   display: flex;
-  flex: 5;
+  flex: 1;
   flex-direction: column;
   flex-wrap: wrap;
 }
