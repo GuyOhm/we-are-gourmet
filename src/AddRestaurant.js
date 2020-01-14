@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { DialogTitle, Divider, TextField, Button, DialogActions } from '@material-ui/core';
+import { DialogTitle, TextField, Button, DialogActions } from '@material-ui/core';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Rating from '@material-ui/lab/Rating';
 import RestaurantData from './model/RestaurantData';
 // import './AddRestaurant.css';
 

@@ -7,6 +7,7 @@ import RestaurantData from './model/RestaurantData';
 import RatingData from './model/RatingData';
 import Details from './Details';
 import AddRestaurant from './AddRestaurant';
+import Toast from './Toast';
 
 const PLACES_TYPE_SEARCH = ['restaurant'];
 const PARIS_LATLNG = {
@@ -27,7 +28,8 @@ function App() {
   const [ restaurantHover, setRestaurantHover ] = useState(null);
   const [ openAddRestaurant, setOpenAddRestaurant ] = useState(false);
   const [ positionNewRestaurant, setPositionNewRestaurant ] = useState(null);
-  const [restaurantsAdded, setRestaurantsAdded] = useState([]);
+  const [ restaurantsAdded, setRestaurantsAdded ] = useState([]);
+  const [ openToast, setOpenToast ] = useState(false);
   
   const getUserPosition = () => {
     return new Promise( (resolve, reject) => {
@@ -149,15 +151,16 @@ function App() {
   function getFilteredRestaurants(restaurants) {
     let restaurantsFiltered = [];
     restaurantsFiltered = restaurants.filter(restaurant => {
-      if (shouldDisplayOnMap(restaurant)) {
-        return (
-          filter.to >= filter.from ?
-          restaurant.averageRating >= filter.from && restaurant.averageRating <= filter.to || restaurant.averageRating === 0 :
-          restaurant.averageRating <= filter.from && restaurant.averageRating >= filter.to || restaurant.averageRating === 0 
-        );
-      }
-    })
+      let [min, max] = filter.to >= filter.from ? [filter.from, filter.to] : [filter.to, filter.from];
+      return shouldDisplayOnMap(restaurant) && (
+        restaurant.averageRating === 0 || (restaurant.averageRating >= min && restaurant.averageRating <= max)
+      )
+    });
     return restaurantsFiltered;
+  }
+
+  function closeToast() {
+    setOpenToast(false);
   }
 
   useEffect( () => {
@@ -175,6 +178,7 @@ function App() {
       }
       catch (error) {
         console.log(error);
+        setOpenToast(true);
         setReadyLocation(true);
       }
       setIsLoading(false);
@@ -228,6 +232,11 @@ function App() {
           position={positionNewRestaurant}
           saveRestaurant={saveRestaurantFromMap} />
       </div>
+      <Toast
+        open={openToast}
+        text="We couldn't get your position, the map is centered on Paris."
+        handleClose={closeToast}
+      />
     </div>
   );
 }
