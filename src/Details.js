@@ -106,7 +106,6 @@ function Details(props) {
             name="newRating"
             value={value}
             onChange={handleChangeValue}
-            precision={0.5}
           />
           <TextField
             name="fullname"

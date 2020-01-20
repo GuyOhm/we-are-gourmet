@@ -3,7 +3,6 @@ import Dialog from '@material-ui/core/Dialog';
 import { DialogTitle, TextField, Button, DialogActions } from '@material-ui/core';
 import DialogContent from '@material-ui/core/DialogContent';
 import RestaurantData from './model/RestaurantData';
-// import './AddRestaurant.css';
 
 function AddRestaurant(props) {
 
